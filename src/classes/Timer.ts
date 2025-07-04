@@ -16,6 +16,9 @@ export class Timer {
         presetSelect: HTMLSelectElement;
         savePresetButton: HTMLButtonElement;
         presetNameInput: HTMLInputElement;
+        selectedPresetDisplay: HTMLElement;
+        deletePresetButton: HTMLButtonElement;
+        presetListContainer: HTMLElement;
     };
     private presets: TimerPreset[] = [];
 
@@ -36,12 +39,17 @@ export class Timer {
             secondsInput: document.getElementById('timerSeconds') as HTMLInputElement,
             presetSelect: document.getElementById('timerPresetSelect') as HTMLSelectElement,
             savePresetButton: document.getElementById('timerSavePreset') as HTMLButtonElement,
-            presetNameInput: document.getElementById('timerPresetName') as HTMLInputElement
+            presetNameInput: document.getElementById('timerPresetName') as HTMLInputElement,
+            selectedPresetDisplay: document.getElementById('timerSelectedPreset') as HTMLElement,
+            deletePresetButton: document.getElementById('timerDeletePreset') as HTMLButtonElement,
+            presetListContainer: document.getElementById('timerPresetList') as HTMLElement
         };
 
         this.initializeEventListeners();
         this.loadPresets();
         this.updatePresetSelect();
+        this.updatePresetListDisplay();
+        this.clearSelectedPresetDisplay();
     }
 
     private initializeEventListeners(): void {
@@ -59,6 +67,9 @@ export class Timer {
         }
         if (this.elements.savePresetButton) {
             this.elements.savePresetButton.addEventListener('click', () => this.saveCurrentAsPreset());
+        }
+        if (this.elements.deletePresetButton) {
+            this.elements.deletePresetButton.addEventListener('click', () => this.deleteSelectedPreset());
         }
     }
 
@@ -169,6 +180,8 @@ export class Timer {
 
         this.savePresets();
         this.updatePresetSelect();
+        this.updatePresetListDisplay();
+        this.updatePresetListDisplay();
     }
 
     // プリセットの読み込み
@@ -215,7 +228,10 @@ export class Timer {
     // プリセットを読み込んでフォームに設定
     private loadPreset(): void {
         const selectedId = this.elements.presetSelect.value;
-        if (!selectedId) return;
+        if (!selectedId) {
+            this.clearSelectedPresetDisplay();
+            return;
+        }
 
         const preset = this.presets.find(p => p.id === selectedId);
         if (!preset) return;
@@ -223,6 +239,9 @@ export class Timer {
         this.elements.hoursInput.value = preset.hours.toString();
         this.elements.minutesInput.value = preset.minutes.toString();
         this.elements.secondsInput.value = preset.seconds.toString();
+
+        // 選択されたプリセットを表示
+        this.displaySelectedPreset(preset);
 
         // 選択したプリセットの最終使用日時を更新
         preset.lastUsed = new Date();
@@ -284,5 +303,123 @@ export class Timer {
     // ユニークID生成
     private generateId(): string {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    // 選択されたプリセットを表示
+    private displaySelectedPreset(preset: TimerPreset): void {
+        if (!this.elements.selectedPresetDisplay) return;
+
+        const formattedTime = this.formatTime(preset.hours, preset.minutes, preset.seconds);
+        const lastUsed = preset.lastUsed.toLocaleDateString('ja-JP');
+        
+        this.elements.selectedPresetDisplay.innerHTML = `
+            <div class="selected-preset-info">
+                <div class="preset-title">${preset.name}</div>
+                <div class="preset-time">${formattedTime}</div>
+                <div class="preset-meta">最終使用: ${lastUsed}</div>
+            </div>
+        `;
+        
+        this.elements.selectedPresetDisplay.style.display = 'block';
+        
+        // 削除ボタンを表示
+        if (this.elements.deletePresetButton) {
+            this.elements.deletePresetButton.style.display = 'inline-block';
+        }
+    }
+
+    // 選択されたプリセットの表示をクリア
+    private clearSelectedPresetDisplay(): void {
+        if (this.elements.selectedPresetDisplay) {
+            this.elements.selectedPresetDisplay.style.display = 'none';
+            this.elements.selectedPresetDisplay.innerHTML = '';
+        }
+        
+        if (this.elements.deletePresetButton) {
+            this.elements.deletePresetButton.style.display = 'none';
+        }
+    }
+
+    // 選択されたプリセットを削除
+    private deleteSelectedPreset(): void {
+        const selectedId = this.elements.presetSelect.value;
+        if (!selectedId) {
+            alert('削除するプリセットを選択してください');
+            return;
+        }
+
+        const preset = this.presets.find(p => p.id === selectedId);
+        if (!preset) return;
+
+        const confirmDelete = confirm(`プリセット「${preset.name}」を削除しますか？`);
+        if (!confirmDelete) return;
+
+        this.presets = this.presets.filter(p => p.id !== selectedId);
+        this.savePresets();
+        this.updatePresetSelect();
+        this.updatePresetListDisplay();
+
+        // 選択状態をクリア
+        this.elements.presetSelect.value = '';
+        this.clearSelectedPresetDisplay();
+        
+        // フォームも初期化
+        this.elements.hoursInput.value = '0';
+        this.elements.minutesInput.value = '0';
+        this.elements.secondsInput.value = '0';
+
+        alert(`プリセット「${preset.name}」を削除しました`);
+    }
+
+    // プリセットリストの表示を更新
+    private updatePresetListDisplay(): void {
+        if (!this.elements.presetListContainer) return;
+
+        this.elements.presetListContainer.innerHTML = '';
+
+        if (this.presets.length === 0) {
+            this.elements.presetListContainer.innerHTML = '<div class="no-presets">保存されたプリセットはありません</div>';
+            return;
+        }
+
+        this.presets.forEach(preset => {
+            const presetItem = document.createElement('div');
+            presetItem.className = 'preset-item';
+            
+            const formattedTime = this.formatTime(preset.hours, preset.minutes, preset.seconds);
+            const lastUsed = preset.lastUsed.toLocaleDateString('ja-JP');
+            
+            presetItem.innerHTML = `
+                <div class="preset-item-content">
+                    <div class="preset-item-name">${preset.name}</div>
+                    <div class="preset-item-time">${formattedTime}</div>
+                    <div class="preset-item-meta">最終使用: ${lastUsed}</div>
+                </div>
+                <div class="preset-item-actions">
+                    <button class="btn-preset-load" data-id="${preset.id}">読込</button>
+                    <button class="btn-preset-delete" data-id="${preset.id}">削除</button>
+                </div>
+            `;
+
+            // イベントリスナーを追加
+            const loadBtn = presetItem.querySelector('.btn-preset-load') as HTMLButtonElement;
+            const deleteBtn = presetItem.querySelector('.btn-preset-delete') as HTMLButtonElement;
+
+            if (loadBtn) {
+                loadBtn.addEventListener('click', () => {
+                    this.elements.presetSelect.value = preset.id;
+                    this.loadPreset();
+                });
+            }
+
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+                    this.elements.presetSelect.value = preset.id;
+                    this.deleteSelectedPreset();
+                });
+            }
+
+            this.elements.presetListContainer.appendChild(presetItem);
+        });
     }
 }

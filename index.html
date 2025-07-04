@@ -29,6 +29,9 @@
                     </div>
                 </div>
 
+                <!-- 選択されたプリセットの表示エリア -->
+                <div id="timerSelectedPreset" class="selected-preset-display" style="display: none;"></div>
+
                 <!-- 時間設定エリア -->
                 <div class="input-group">
                     <input type="number" id="timerHours" min="0" max="23" value="0" placeholder="時">
@@ -42,7 +45,10 @@
                 <div class="preset-save-section">
                     <div class="preset-save-group">
                         <input type="text" id="timerPresetName" placeholder="プリセット名 (省略可)" class="preset-name-input">
-                        <button class="success" id="timerSavePreset">設定を保存</button>
+                        <div class="preset-actions">
+                            <button class="success" id="timerSavePreset">設定を保存</button>
+                            <button class="danger" id="timerDeletePreset" style="display: none;">削除</button>
+                        </div>
                     </div>
                 </div>
 
@@ -51,6 +57,12 @@
                     <button class="primary" id="timerStart">開始</button>
                     <button class="secondary" id="timerStop">停止</button>
                     <button class="success" id="timerReset">リセット</button>
+                </div>
+
+                <!-- プリセットリスト表示エリア -->
+                <div class="preset-list-section">
+                    <h4>保存されたプリセット</h4>
+                    <div id="timerPresetList" class="preset-list"></div>
                 </div>
             </div>
 
@@ -65,9 +77,11 @@
                         <select id="alarmPresetSelect" class="preset-select">
                             <option value="">プリセットを選択...</option>
                         </select>
-                        <button class="danger small" id="alarmDeletePreset" style="display: none;">削除</button>
                     </div>
                 </div>
+
+                <!-- 選択されたプリセットの表示エリア -->
+                <div id="alarmSelectedPreset" class="selected-preset-display" style="display: none;"></div>
 
                 <!-- アラーム設定エリア -->
                 <div class="input-group">
@@ -86,7 +100,10 @@
                 <!-- プリセット保存エリア -->
                 <div class="preset-save-section">
                     <div class="preset-save-group">
-                        <button class="success" id="alarmSavePreset">アラームを保存</button>
+                        <div class="preset-actions">
+                            <button class="success" id="alarmSavePreset">アラームを保存</button>
+                            <button class="danger" id="alarmDeletePreset" style="display: none;">削除</button>
+                        </div>
                     </div>
                 </div>
 
@@ -97,6 +114,12 @@
                 </div>
                 
                 <div id="alarmStatus" style="text-align: center; margin-top: 20px;"></div>
+
+                <!-- プリセットリスト表示エリア -->
+                <div class="preset-list-section">
+                    <h4>保存されたアラーム</h4>
+                    <div id="alarmPresetList" class="preset-list"></div>
+                </div>
             </div>
 
             <!-- ストップウォッチ -->

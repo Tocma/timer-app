@@ -15,7 +15,9 @@ export class Alarm {
         presetSelect: HTMLSelectElement;
         savePresetButton: HTMLButtonElement;
         alarmNameInput: HTMLInputElement;
-        presetDeleteButton: HTMLButtonElement;
+        selectedPresetDisplay: HTMLElement;
+        deletePresetButton: HTMLButtonElement;
+        presetListContainer: HTMLElement;
     };
     private updateIntervalId: number | null = null;
     private presets: AlarmPreset[] = [];
@@ -34,13 +36,17 @@ export class Alarm {
             presetSelect: document.getElementById('alarmPresetSelect') as HTMLSelectElement,
             savePresetButton: document.getElementById('alarmSavePreset') as HTMLButtonElement,
             alarmNameInput: document.getElementById('alarmName') as HTMLInputElement,
-            presetDeleteButton: document.getElementById('alarmDeletePreset') as HTMLButtonElement
+            selectedPresetDisplay: document.getElementById('alarmSelectedPreset') as HTMLElement,
+            deletePresetButton: document.getElementById('alarmDeletePreset') as HTMLButtonElement,
+            presetListContainer: document.getElementById('alarmPresetList') as HTMLElement
         };
 
         this.initializeEventListeners();
         this.startTimeDisplay();
         this.loadPresets();
         this.updatePresetSelect();
+        this.updatePresetListDisplay();
+        this.clearSelectedPresetDisplay();
     }
 
     private initializeEventListeners(): void {
@@ -57,8 +63,8 @@ export class Alarm {
         if (this.elements.savePresetButton) {
             this.elements.savePresetButton.addEventListener('click', () => this.saveCurrentAsPreset());
         }
-        if (this.elements.presetDeleteButton) {
-            this.elements.presetDeleteButton.addEventListener('click', () => this.deleteSelectedPreset());
+        if (this.elements.deletePresetButton) {
+            this.elements.deletePresetButton.addEventListener('click', () => this.deleteSelectedPreset());
         }
     }
 
@@ -181,6 +187,7 @@ export class Alarm {
 
         this.savePresets();
         this.updatePresetSelect();
+        this.updatePresetListDisplay();
     }
 
     // プリセットの読み込み
@@ -224,24 +231,24 @@ export class Alarm {
             option.textContent = `${preset.time} - ${preset.name}${usageIndicator}`;
             this.elements.presetSelect.appendChild(option);
         });
-
-        // 削除ボタンの表示制御
-        if (this.elements.presetDeleteButton) {
-            this.elements.presetDeleteButton.style.display = 
-                this.presets.length > 0 ? 'inline-block' : 'none';
-        }
     }
 
     // プリセットを読み込んでフォームに設定
     private loadPreset(): void {
         const selectedId = this.elements.presetSelect.value;
-        if (!selectedId) return;
+        if (!selectedId) {
+            this.clearSelectedPresetDisplay();
+            return;
+        }
 
         const preset = this.presets.find(p => p.id === selectedId);
         if (!preset) return;
 
         this.elements.alarmTimeInput.value = preset.time;
         this.elements.alarmNameInput.value = preset.name;
+
+        // 選択されたプリセットを表示
+        this.displaySelectedPreset(preset);
 
         // 選択したプリセットの使用回数と最終使用日時を更新
         preset.usageCount++;
@@ -255,6 +262,7 @@ export class Alarm {
         
         this.savePresets();
         this.updatePresetSelect();
+        this.updatePresetListDisplay();
     }
 
     // 現在の設定をプリセットとして保存
@@ -293,32 +301,10 @@ export class Alarm {
 
         this.savePresets();
         this.updatePresetSelect();
+        this.updatePresetListDisplay();
         
         const savedName = name || this.generateAutoName(time);
         alert(`アラームプリセット「${savedName}」を保存しました`);
-    }
-
-    // 選択されたプリセットを削除
-    private deleteSelectedPreset(): void {
-        const selectedId = this.elements.presetSelect.value;
-        if (!selectedId) {
-            alert('削除するプリセットを選択してください');
-            return;
-        }
-
-        const preset = this.presets.find(p => p.id === selectedId);
-        if (!preset) return;
-
-        const confirmDelete = confirm(`プリセット「${preset.name}」を削除しますか？`);
-        if (!confirmDelete) return;
-
-        this.presets = this.presets.filter(p => p.id !== selectedId);
-        this.savePresets();
-        this.updatePresetSelect();
-
-        // フォームもクリア
-        this.elements.presetSelect.value = '';
-        alert(`プリセット「${preset.name}」を削除しました`);
     }
 
     // 自動的な名前生成
@@ -339,5 +325,122 @@ export class Alarm {
     // ユニークID生成
     private generateId(): string {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    // 選択されたプリセットを表示
+    private displaySelectedPreset(preset: AlarmPreset): void {
+        if (!this.elements.selectedPresetDisplay) return;
+
+        const lastUsed = preset.lastUsed.toLocaleDateString('ja-JP');
+        const usageCount = preset.usageCount;
+        
+        this.elements.selectedPresetDisplay.innerHTML = `
+            <div class="selected-preset-info">
+                <div class="preset-title">${preset.name}</div>
+                <div class="preset-time">${preset.time}</div>
+                <div class="preset-meta">使用回数: ${usageCount}回 | 最終使用: ${lastUsed}</div>
+            </div>
+        `;
+        
+        this.elements.selectedPresetDisplay.style.display = 'block';
+        
+        // 削除ボタンを表示
+        if (this.elements.deletePresetButton) {
+            this.elements.deletePresetButton.style.display = 'inline-block';
+        }
+    }
+
+    // 選択されたプリセットの表示をクリア
+    private clearSelectedPresetDisplay(): void {
+        if (this.elements.selectedPresetDisplay) {
+            this.elements.selectedPresetDisplay.style.display = 'none';
+            this.elements.selectedPresetDisplay.innerHTML = '';
+        }
+        
+        if (this.elements.deletePresetButton) {
+            this.elements.deletePresetButton.style.display = 'none';
+        }
+    }
+
+    // 選択されたプリセットを削除
+    private deleteSelectedPreset(): void {
+        const selectedId = this.elements.presetSelect.value;
+        if (!selectedId) {
+            alert('削除するプリセットを選択してください');
+            return;
+        }
+
+        const preset = this.presets.find(p => p.id === selectedId);
+        if (!preset) return;
+
+        const confirmDelete = confirm(`アラームプリセット「${preset.name}」を削除しますか？`);
+        if (!confirmDelete) return;
+
+        this.presets = this.presets.filter(p => p.id !== selectedId);
+        this.savePresets();
+        this.updatePresetSelect();
+        this.updatePresetListDisplay();
+
+        // 選択状態をクリア
+        this.elements.presetSelect.value = '';
+        this.clearSelectedPresetDisplay();
+        
+        // フォームも初期化
+        this.elements.alarmTimeInput.value = '';
+        this.elements.alarmNameInput.value = '';
+
+        alert(`アラームプリセット「${preset.name}」を削除しました`);
+    }
+
+    // プリセットリストの表示を更新
+    private updatePresetListDisplay(): void {
+        if (!this.elements.presetListContainer) return;
+
+        this.elements.presetListContainer.innerHTML = '';
+
+        if (this.presets.length === 0) {
+            this.elements.presetListContainer.innerHTML = '<div class="no-presets">保存されたアラームはありません</div>';
+            return;
+        }
+
+        this.presets.forEach(preset => {
+            const presetItem = document.createElement('div');
+            presetItem.className = 'preset-item';
+            
+            const lastUsed = preset.lastUsed.toLocaleDateString('ja-JP');
+            const usageCount = preset.usageCount;
+            
+            presetItem.innerHTML = `
+                <div class="preset-item-content">
+                    <div class="preset-item-name">${preset.name}</div>
+                    <div class="preset-item-time">${preset.time}</div>
+                    <div class="preset-item-meta">使用回数: ${usageCount}回 | 最終使用: ${lastUsed}</div>
+                </div>
+                <div class="preset-item-actions">
+                    <button class="btn-preset-load" data-id="${preset.id}">読込</button>
+                    <button class="btn-preset-delete" data-id="${preset.id}">削除</button>
+                </div>
+            `;
+
+            // イベントリスナーを追加
+            const loadBtn = presetItem.querySelector('.btn-preset-load') as HTMLButtonElement;
+            const deleteBtn = presetItem.querySelector('.btn-preset-delete') as HTMLButtonElement;
+
+            if (loadBtn) {
+                loadBtn.addEventListener('click', () => {
+                    this.elements.presetSelect.value = preset.id;
+                    this.loadPreset();
+                });
+            }
+
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+                    this.elements.presetSelect.value = preset.id;
+                    this.deleteSelectedPreset();
+                });
+            }
+
+            this.elements.presetListContainer.appendChild(presetItem);
+        });
     }
 }

@@ -251,6 +251,49 @@ input[type="time"] {
     font-style: italic;
 }
 
+/* 選択されたプリセット表示エリア */
+.selected-preset-display {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    border: 1px solid #90caf9;
+    text-align: center;
+}
+
+.selected-preset-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.preset-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1565c0;
+}
+
+.preset-time {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0d47a1;
+    font-family: 'Courier New', monospace;
+}
+
+.preset-meta {
+    font-size: 12px;
+    color: #42a5f5;
+    font-style: italic;
+}
+
+/* プリセットアクションボタン */
+.preset-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
 /* アラーム機能特有のスタイル */
 .alarm-name-section {
     margin: 15px 0;
@@ -297,14 +340,112 @@ input[type="time"] {
     opacity: 0.7;
 }
 
-/* 削除ボタンのコンテナスタイル */
-.preset-select-group {
-    position: relative;
+/* プリセットリスト表示エリア */
+.preset-list-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
 }
 
-/* プリセット選択とボタンの配置 */
-.preset-select-group .preset-select {
-    margin-bottom: 8px;
+.preset-list-section h4 {
+    margin-bottom: 15px;
+    color: #495057;
+    text-align: center;
+    font-size: 16px;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+.preset-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.preset-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: white;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preset-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.preset-item-content {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.preset-item-name {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.preset-item-time {
+    font-size: 18px;
+    font-weight: bold;
+    color: #3498db;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 2px;
+}
+
+.preset-item-meta {
+    font-size: 11px;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.preset-item-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-preset-load,
+.btn-preset-delete {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600;
+}
+
+.btn-preset-load {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-preset-load:hover {
+    background-color: #2980b9;
+}
+
+.btn-preset-delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-preset-delete:hover {
+    background-color: #c0392b;
+}
+
+.no-presets {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+    font-style: italic;
 }
 
 /* アラーム状態表示の強化 */
@@ -356,14 +497,28 @@ input[type="time"] {
         font-size: 12px;
     }
     
-    .preset-section, .preset-save-section, .alarm-name-section {
+    .preset-section, .preset-save-section, .alarm-name-section, .preset-list-section {
         padding: 12px;
         margin: 12px 0;
+    }
+    
+    .preset-item {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .preset-item-content {
+        text-align: center;
+    }
+    
+    .preset-actions {
+        flex-wrap: wrap;
     }
 }
 
 /* アニメーション効果 */
-.preset-section, .preset-save-section, .alarm-name-section {
+.preset-section, .preset-save-section, .alarm-name-section, .selected-preset-display {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -378,10 +533,33 @@ button:focus {
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
 }
 
-.danger:focus {
+.danger:focus, .btn-preset-delete:focus {
     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
 }
 
-.success:focus {
+.success:focus, .btn-preset-load:focus {
     box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.3);
+}
+
+/* スクロールバーのカスタマイズ */
+.preset-list::-webkit-scrollbar,
+.history::-webkit-scrollbar {
+    width: 6px;
+}
+
+.preset-list::-webkit-scrollbar-track,
+.history::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.preset-list::-webkit-scrollbar-thumb,
+.history::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.preset-list::-webkit-scrollbar-thumb:hover,
+.history::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
