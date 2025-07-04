@@ -104,6 +104,21 @@ button {
     background-color: #229954;
 }
 
+.danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.danger:hover {
+    background-color: #c82333;
+}
+
+.small {
+    padding: 6px 12px;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
 input[type="number"], input[type="time"] {
     padding: 10px;
     font-size: 16px;
@@ -152,4 +167,221 @@ input[type="time"] {
 
 .hidden {
     display: none;
+}
+
+/* プリセット機能用のスタイル */
+.preset-section {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.preset-select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.preset-select-group label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.preset-select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: white;
+    color: #495057;
+    min-width: 280px;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.preset-select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.preset-select:hover {
+    border-color: #adb5bd;
+}
+
+.preset-save-section {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #e8f5e8;
+    border-radius: 8px;
+    border: 1px solid #d4edda;
+}
+
+.preset-save-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.preset-name-input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #28a745;
+    border-radius: 6px;
+    background-color: white;
+    color: #495057;
+    min-width: 200px;
+    text-align: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.preset-name-input:focus {
+    outline: none;
+    border-color: #27ae60;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+}
+
+.preset-name-input::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* アラーム機能特有のスタイル */
+.alarm-name-section {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #fff3cd;
+    border-radius: 8px;
+    border: 1px solid #ffeaa7;
+}
+
+.alarm-name-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.alarm-name-group label {
+    font-weight: 600;
+    color: #856404;
+    font-size: 14px;
+}
+
+.alarm-name-input {
+    padding: 10px 15px;
+    font-size: 15px;
+    border: 1px solid #f39c12;
+    border-radius: 6px;
+    background-color: white;
+    color: #495057;
+    min-width: 250px;
+    text-align: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.alarm-name-input:focus {
+    outline: none;
+    border-color: #e67e22;
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+}
+
+.alarm-name-input::placeholder {
+    color: #856404;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* 削除ボタンのコンテナスタイル */
+.preset-select-group {
+    position: relative;
+}
+
+/* プリセット選択とボタンの配置 */
+.preset-select-group .preset-select {
+    margin-bottom: 8px;
+}
+
+/* アラーム状態表示の強化 */
+#alarmStatus {
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#alarmStatus:not(:empty) {
+    background-color: rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+    .container {
+        max-width: 90%;
+        margin: 10px;
+    }
+    
+    .preset-select, .preset-name-input, .alarm-name-input {
+        min-width: 240px;
+    }
+    
+    .display {
+        font-size: 36px;
+        margin: 20px 0;
+    }
+    
+    .content {
+        padding: 20px;
+    }
+    
+    .controls {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    .small {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    
+    .preset-section, .preset-save-section, .alarm-name-section {
+        padding: 12px;
+        margin: 12px 0;
+    }
+}
+
+/* アニメーション効果 */
+.preset-section, .preset-save-section, .alarm-name-section {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preset-section:hover, .preset-save-section:hover, .alarm-name-section:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* フォーカス状態の改善 */
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.danger:focus {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
+}
+
+.success:focus {
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.3);
 }

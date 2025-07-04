@@ -18,6 +18,18 @@
             <!-- タイマー -->
             <div id="timer" class="tab-content">
                 <div class="display" id="timerDisplay">00:00:00</div>
+                
+                <!-- プリセット選択エリア -->
+                <div class="preset-section">
+                    <div class="preset-select-group">
+                        <label for="timerPresetSelect">保存された設定:</label>
+                        <select id="timerPresetSelect" class="preset-select">
+                            <option value="">プリセットを選択...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 時間設定エリア -->
                 <div class="input-group">
                     <input type="number" id="timerHours" min="0" max="23" value="0" placeholder="時">
                     <span>:</span>
@@ -25,6 +37,16 @@
                     <span>:</span>
                     <input type="number" id="timerSeconds" min="0" max="59" value="0" placeholder="秒">
                 </div>
+
+                <!-- プリセット保存エリア -->
+                <div class="preset-save-section">
+                    <div class="preset-save-group">
+                        <input type="text" id="timerPresetName" placeholder="プリセット名 (省略可)" class="preset-name-input">
+                        <button class="success" id="timerSavePreset">設定を保存</button>
+                    </div>
+                </div>
+
+                <!-- コントロールボタン -->
                 <div class="controls">
                     <button class="primary" id="timerStart">開始</button>
                     <button class="secondary" id="timerStop">停止</button>
@@ -35,14 +57,45 @@
             <!-- アラーム -->
             <div id="alarm" class="tab-content hidden">
                 <div class="display" id="currentTime">00:00:00</div>
+                
+                <!-- プリセット選択エリア -->
+                <div class="preset-section">
+                    <div class="preset-select-group">
+                        <label for="alarmPresetSelect">保存されたアラーム:</label>
+                        <select id="alarmPresetSelect" class="preset-select">
+                            <option value="">プリセットを選択...</option>
+                        </select>
+                        <button class="danger small" id="alarmDeletePreset" style="display: none;">削除</button>
+                    </div>
+                </div>
+
+                <!-- アラーム設定エリア -->
                 <div class="input-group">
                     <label>アラーム時刻：</label>
                     <input type="time" id="alarmTime">
                 </div>
+
+                <!-- アラーム名設定エリア -->
+                <div class="alarm-name-section">
+                    <div class="alarm-name-group">
+                        <label for="alarmName">アラーム名:</label>
+                        <input type="text" id="alarmName" placeholder="会議、休憩、など..." class="alarm-name-input">
+                    </div>
+                </div>
+
+                <!-- プリセット保存エリア -->
+                <div class="preset-save-section">
+                    <div class="preset-save-group">
+                        <button class="success" id="alarmSavePreset">アラームを保存</button>
+                    </div>
+                </div>
+
+                <!-- コントロールボタン -->
                 <div class="controls">
                     <button class="primary" id="alarmSet">セット</button>
                     <button class="secondary" id="alarmCancel">キャンセル</button>
                 </div>
+                
                 <div id="alarmStatus" style="text-align: center; margin-top: 20px;"></div>
             </div>
 
